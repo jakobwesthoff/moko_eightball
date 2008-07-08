@@ -29,27 +29,32 @@ namespace MokoEightBall {
         protected void loadImages() {
             this.images = new HashTable<string, Cairo.ImageSurface>( GLib.str_hash, GLib.str_equal );
             this.images.insert( 
-                "front_face",
-                new Cairo.ImageSurface.from_png( "data/front_face.png" )
+                "eightball_front_face",
+                new Cairo.ImageSurface.from_png( "data/eightball_front_face.png" )
             );
         }
 
         public bool onExpose( DrawingArea area, Gdk.Event e ) {
-            var ctx = Gdk.cairo_create( area.window );
+            var c = Gdk.cairo_create( area.window );
             
-            ctx.save();
-
-            ctx.set_source_surface( 
-                this.images.lookup( "front_face" ),
-                0, 0 
-            );            
-            ctx.rectangle( 0, 0, 300, 300 );
-            ctx.clip();
-            ctx.paint();
-
-            ctx.restore();
+            this.drawBackground( c, e.expose );
 
             return true;
+        }
+
+        public void drawBackground( Cairo.Context c, Gdk.EventExpose e ) {
+            c.save();
+
+            c.set_source_surface( 
+                this.images.lookup( "eightball_front_face" ),
+                0, 0 
+            );            
+            c.rectangle( e.area.x, e.area.y, e.area.width, e.area.height );
+            c.clip();
+            c.paint();
+
+            c.restore();
+
         }
     }
 
