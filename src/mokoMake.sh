@@ -7,4 +7,4 @@ arm-angstrom-linux-gnueabi-gcc `pkg-config --cflags gtk+-2.0 cairo` -c EightBall
 
 arm-angstrom-linux-gnueabi-gcc `pkg-config --libs gtk+-2.0 cairo`  MokoEightBall.o EightBallSurface.o -o MokoEightBall
 
-rm *.c *.h
+rm *.c *.h *.o
