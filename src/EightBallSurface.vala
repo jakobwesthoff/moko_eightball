@@ -32,6 +32,10 @@ namespace MokoEightBall {
                 "eightball_front_face",
                 new Cairo.ImageSurface.from_png( "data/eightball_front_face.png" )
             );
+            this.images.insert( 
+                "eightball_back_face",
+                new Cairo.ImageSurface.from_png( "data/eightball_back_face.png" )
+            );
         }
 
         public bool onExpose( DrawingArea area, Gdk.Event e ) {
@@ -76,7 +80,7 @@ namespace MokoEightBall {
             c.translate( movement_x, movement_y ); 
 
             c.set_source_surface( 
-                this.images.lookup( "eightball_front_face" ),
+                image,
                 0, 0 
             );            
             c.rectangle( e.area.x - movement_x, e.area.y - movement_y, e.area.width, e.area.height );

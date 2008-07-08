@@ -1,4 +1,6 @@
 #!/bin/sh
+. /usr/local/openmoko/arm/setup-env
+
 valac --pkg gtk+-2.0 --pkg cairo -C *.vala
 
 arm-angstrom-linux-gnueabi-gcc `pkg-config --cflags gtk+-2.0 cairo` -c MokoEightBall.c -o MokoEightBall.o
