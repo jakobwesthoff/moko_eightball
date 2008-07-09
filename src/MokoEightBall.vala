@@ -21,6 +21,10 @@ namespace MokoEightBall {
         }
 
         static int main( string[] args ) {
+            
+            // Just for testing the accelerometer
+//            var accel = new Jakob.Openmoko.Util.AccelerometerEventManager();
+
             Gtk.init( ref args );
             var app = new MokoEightBall();
             app.show_all();

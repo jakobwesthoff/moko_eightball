@@ -1,2 +1,2 @@
 #!/bin/sh
-valac --pkg gtk+-2.0 --pkg cairo -o MokoEightBall *.vala 
+valac --thread --pkg gtk+-2.0 --pkg gio-2.0 --pkg cairo -o MokoEightBall *.vala 
