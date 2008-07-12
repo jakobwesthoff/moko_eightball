@@ -11,28 +11,6 @@ namespace Jakob.Openmoko.Util {
             set;
         }
 
-        protected int _interval;
-        protected bool timeoutUpdate = false;
-        public int interval {
-            get {
-                return _interval;
-            }
-            set {                
-                this._interval = value;
-                if ( this.timerId == 0  ) {
-                    // We need to create a new timer, because there isn't one running
-                    this.timeoutUpdate = false;
-                    this.timerId = Timeout.add( this._interval, this.processInputEvents );
-                }
-                else {
-                    // The already running timer needs to be updated
-                    this.timeoutUpdate = true;
-                }
-            }
-        }
-        
-        protected uint timerId = 0;
-
         protected int[] x = new int[2];
         protected int[] y = new int[2];
         protected int[] z = new int[2];
@@ -40,7 +18,7 @@ namespace Jakob.Openmoko.Util {
         protected DataInputStream in;
 
         construct {
-            // Initialize the tolerance
+            // Initialize the attributes
             this.tolerance = 20;
 
             // Init the saved x,y,z values
@@ -64,90 +42,84 @@ namespace Jakob.Openmoko.Util {
             catch ( GLib.Error e ) {
                 error( "Accelerometer device could not be opened: %s\n", e.message );
             }
-            
-            // Set the timer interval to check the values. This will
-            // automatically start the timer which handles the input stream
-            // Default: 100ms
-            this.interval = 100;
 
+            try {
+                Thread.create( this.processInputEvents, false );
+            }
+            catch ( ThreadError e ) {
+                error( "Accelerometer reading thread could not be created: %s\n", e.message );
+            }
         }
 
-        public bool processInputEvents() {
-            short type, code;
-            int value;
-            try {
-                // Skip the timestamp
-                this.in.skip( 8, null );
-                
-                // Read the type
-                type = this.in.read_int16( null );
-                
-                // Read the code
-                code = this.in.read_int16( null );
+        public void* processInputEvents() {
+            while( true ) {
+                short type, code;
+                int value;
+                try {
+                    // Skip the timestamp
+                    this.in.skip( 8, null );
+                    
+                    // Read the type
+                    type = this.in.read_int16( null );
+                    
+                    // Read the code
+                    code = this.in.read_int16( null );
 
-                // Read the value
-                value  = this.in.read_int32( null );
+                    // Read the value
+                    value  = this.in.read_int32( null );
 //                    stdout.printf( "type: %i, code: %i, value: %i\n", type, code, value );
+                }
+                catch ( GLib.Error e ) {
+                    error( "Accelerometer data could not be read: %s\n", e.message );
+                }
+
+                switch( type ) {
+                    case 0:
+                        switch( code ) {
+                            case 0:
+                                // One update cycle is complete let's emit the needed signals
+                                this.emitAllNeededSignals();
+                            break;
+                            default:
+                                warning( "Unknown code ( 0x%02x ) for type 0x%02x\n", code, type );
+                            break;
+                        }
+                    break;
+
+                    case 2:
+                        switch ( code ) {
+                            case 0:
+                                // Save the old value
+                                this.x[1] = this.x[0];
+                                // Update to the new one
+                                this.x[0] = value;
+                            break;
+                            case 1:
+                                // Save the old value
+                                this.y[1] = this.y[0];
+                                // Update to the new one
+                                this.y[0] = value;
+                            break;
+                            case 2:
+                                // Save the old value
+                                this.z[1] = this.z[0];
+                                // Update to the new one
+                                this.z[0] = value;
+                            break;
+                            default:
+                                warning( "Unknown code ( 0x%02x ) for type 0x%02x\n", code, type );
+                            break;
+                        }
+                    break;
+
+                    default:
+                        warning( "Unknown type ( 0x%02x ) in accelerometer input stream\n", type );
+                    break;
+                }
+
+
             }
-            catch ( GLib.Error e ) {
-                error( "Accelerometer data could not be read: %s\n", e.message );
-            }
-
-            switch( type ) {
-                case 0:
-                    switch( code ) {
-                        case 0:
-                            // One update cycle is complete let's emit the needed signals
-                            this.emitAllNeededSignals();
-                            // Check we need to update the timer with a new interval
-                            lock ( this.timeoutUpdate ) {
-                                if ( this.timeoutUpdate == true ) {
-                                    this.timerId = Timeout.add( this._interval, this.processInputEvents );
-                                    this.timeoutUpdate = false;
-                                    // Stop the old timer
-                                    return false;
-                                }
-                                return true;
-                            }
-                        break;
-                        default:
-                            warning( "Unknown code ( 0x%02x ) for type 0x%02x\n", code, type );
-                        break;
-                    }
-                break;
-
-                case 2:
-                    switch ( code ) {
-                        case 0:
-                            // Save the old value
-                            this.x[1] = this.x[0];
-                            // Update to the new one
-                            this.x[0] = value;
-                        break;
-                        case 1:
-                            // Save the old value
-                            this.y[1] = this.y[0];
-                            // Update to the new one
-                            this.y[0] = value;
-                        break;
-                        case 2:
-                            // Save the old value
-                            this.z[1] = this.z[0];
-                            // Update to the new one
-                            this.z[0] = value;
-                        break;
-                        default:
-                            warning( "Unknown code ( 0x%02x ) for type 0x%02x\n", code, type );
-                        break;
-                    }
-                break;
-
-                default:
-                    warning( "Unknown type ( 0x%02x ) in accelerometer input stream\n", type );
-                break;
-            }
-
-            return true;
+            return null;
         }
 
         protected void emitAllNeededSignals() {
