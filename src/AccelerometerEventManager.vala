@@ -123,9 +123,9 @@ namespace Jakob.Openmoko.Util {
             // If the acceleration is more than the given tolerance value on
             // any axis send the onMovement signal
             lock( this.tolerance ) {
-                if (  Math.fabs( this.dataset.first->x - this.dataset.first->next->x ) > this.tolerance 
-                   || Math.fabs( this.dataset.first->y - this.dataset.first->next->y ) > this.tolerance
-                   || Math.fabs( this.dataset.first->z - this.dataset.first->next->z ) > this.tolerance ) {
+                if (  Math.fabs( this.dataset.first.x - this.dataset.first.next.x ) > this.tolerance 
+                   || Math.fabs( this.dataset.first.y - this.dataset.first.next.y ) > this.tolerance
+                   || Math.fabs( this.dataset.first.z - this.dataset.first.next.z ) > this.tolerance ) {
                     // Create the needed event to emit
                     e = ( e == null ) ? this.createAccelerometerEvent() : e;
                     this.onMovement( e );
@@ -135,9 +135,9 @@ namespace Jakob.Openmoko.Util {
 
         protected AccelerometerEvent createAccelerometerEvent() {
             return new AccelerometerEvent(
-                this.dataset.first->x,
-                this.dataset.first->y,
-                this.dataset.first->z
+                this.dataset.first.x,
+                this.dataset.first.y,
+                this.dataset.first.z
             );
         }
     }
