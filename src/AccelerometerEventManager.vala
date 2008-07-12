@@ -15,8 +15,6 @@ namespace Jakob.Openmoko.Util {
         protected int[] y = new int[2];
         protected int[] z = new int[2];
 
-        protected int sync = 0;
-
         protected DataInputStream in;
 
         construct {
@@ -33,7 +31,7 @@ namespace Jakob.Openmoko.Util {
 
             // Try to open the accelerometer mapped file
             try {
-                File f = File.new_for_path( "/dev/input/event3" );
+                File f = File.new_for_path( "/dev/input/event2" );
                 if ( !f.query_exists( null ) ) {
                     error( "The input device \"%s\" does not exist.\n", f.get_path() );
                 }
@@ -79,12 +77,8 @@ namespace Jakob.Openmoko.Util {
                     case 0:
                         switch( code ) {
                             case 0:
-                                // This is the EV_SYN type with the SYN_REPORT code
-                                // It is not handled at the moment because the
-                                // sensors do not supply relative data. They
-                                // always transmit a EV_SYN followed by a
-                                // relative acceleration update for every axis.
-                                // This makes the relative updates absolute                                
+                                // One update cycle is complete let's emit the needed signals
+                                this.emitAllNeededSignals();
                             break;
                             default:
                                 warning( "Unknown code ( 0x%02x ) for type 0x%02x\n", code, type );
@@ -111,9 +105,6 @@ namespace Jakob.Openmoko.Util {
                                 this.z[1] = this.z[0];
                                 // Update to the new one
                                 this.z[0] = value;
-
-                                // One update cycle is complete let's emit the needed signals
-                                this.emitAllNeededSignals();
                             break;
                             default:
                                 warning( "Unknown code ( 0x%02x ) for type 0x%02x\n", code, type );
@@ -132,15 +123,14 @@ namespace Jakob.Openmoko.Util {
         }
 
         protected void emitAllNeededSignals() {
-            // Create the needed event to emit
-            AccelerometerEvent event = this.createAccelerometerEvent();
-
             // If the acceleration is more than the given tolerance value on
             // any axis send the onMovement signal
             lock( this.tolerance ) {
                 if (  Math.fabs( this.x[0] - this.x[1] ) > this.tolerance 
                    || Math.fabs( this.y[0] - this.y[1] ) > this.tolerance
                    || Math.fabs( this.z[0] - this.z[1] ) > this.tolerance ) {
+                    // Create the needed event to emit
+                    AccelerometerEvent event = this.createAccelerometerEvent();
                     this.onMovement( event );
                 }
             }
