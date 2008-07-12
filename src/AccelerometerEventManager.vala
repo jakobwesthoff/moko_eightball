@@ -11,9 +11,11 @@ namespace Jakob.Openmoko.Util {
             set;
         }
 
-        protected int[] x = new int[2];
-        protected int[] y = new int[2];
-        protected int[] z = new int[2];
+        protected int x = 0;
+        protected int y = 0;
+        protected int z = 0;
+
+        protected AccelerometerEventData dataset;
 
         protected DataInputStream in;
 
@@ -21,13 +23,11 @@ namespace Jakob.Openmoko.Util {
             // Initialize the attributes
             this.tolerance = 20;
 
-            // Init the saved x,y,z values
-            this.x[0] = 0;
-            this.x[1] = 0;
-            this.y[0] = 0;
-            this.y[1] = 0;
-            this.z[0] = 0;
-            this.z[1] = 0;
+            // Init the dataset
+            this.dataset = new AccelerometerEventData( 100 );            
+            // We always need to make sure there are at least two events
+            this.dataset.addValue( 0, 0, 0 );
+            this.dataset.addValue( 0, 0, 0 );
 
             // Try to open the accelerometer mapped file
             try {
@@ -77,6 +77,8 @@ namespace Jakob.Openmoko.Util {
                     case 0:
                         switch( code ) {
                             case 0:
+                                // Add the new value pair to our dataset
+                                this.dataset.addValue( this.x, this.y, this.z );
                                 // One update cycle is complete let's emit the needed signals
                                 this.emitAllNeededSignals();
                             break;
@@ -89,22 +91,16 @@ namespace Jakob.Openmoko.Util {
                     case 2:
                         switch ( code ) {
                             case 0:
-                                // Save the old value
-                                this.x[1] = this.x[0];
-                                // Update to the new one
-                                this.x[0] = value;
+                                // Update to the new value
+                                this.x = value;
                             break;
                             case 1:
-                                // Save the old value
-                                this.y[1] = this.y[0];
-                                // Update to the new one
-                                this.y[0] = value;
+                                // Update to the new value
+                                this.y = value;
                             break;
                             case 2:
-                                // Save the old value
-                                this.z[1] = this.z[0];
-                                // Update to the new one
-                                this.z[0] = value;
+                                // Update to the new value
+                                this.z = value;
                             break;
                             default:
                                 warning( "Unknown code ( 0x%02x ) for type 0x%02x\n", code, type );
@@ -123,24 +119,25 @@ namespace Jakob.Openmoko.Util {
         }
 
         protected void emitAllNeededSignals() {
+            AccelerometerEvent? e = null;
             // If the acceleration is more than the given tolerance value on
             // any axis send the onMovement signal
             lock( this.tolerance ) {
-                if (  Math.fabs( this.x[0] - this.x[1] ) > this.tolerance 
-                   || Math.fabs( this.y[0] - this.y[1] ) > this.tolerance
-                   || Math.fabs( this.z[0] - this.z[1] ) > this.tolerance ) {
+                if (  Math.fabs( this.dataset.first->x - this.dataset.first->next->x ) > this.tolerance 
+                   || Math.fabs( this.dataset.first->y - this.dataset.first->next->y ) > this.tolerance
+                   || Math.fabs( this.dataset.first->z - this.dataset.first->next->z ) > this.tolerance ) {
                     // Create the needed event to emit
-                    AccelerometerEvent event = this.createAccelerometerEvent();
-                    this.onMovement( event );
+                    e = ( e == null ) ? this.createAccelerometerEvent() : e;
+                    this.onMovement( e );
                 }
             }
         }
 
         protected AccelerometerEvent createAccelerometerEvent() {
             return new AccelerometerEvent(
-                this.x[0],
-                this.y[0],
-                this.z[0]
+                this.dataset.first->x,
+                this.dataset.first->y,
+                this.dataset.first->z
             );
         }
     }
