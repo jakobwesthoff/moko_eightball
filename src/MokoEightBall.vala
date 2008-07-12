@@ -24,7 +24,11 @@ namespace MokoEightBall {
             // Just for testing the accelerometer
             var accel = new Jakob.Openmoko.Util.AccelerometerEventManager();
             accel.onMovement += ( o, e ) => {
-                stdout.printf( "x: %i, y: %i, z: %i\n", e.x, e.y, e.z );
+                stdout.printf( "MOVE x: %i, y: %i, z: %i\n", e.x, e.y, e.z );
+            };
+
+            accel.onShaking += ( o, e ) => {
+                stdout.printf( "SHAKE x: %i, y: %i, z: %i\n", e.x, e.y, e.z );
             };
 
             Gtk.init( ref args );
