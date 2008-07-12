@@ -28,6 +28,10 @@ namespace Jakob.Openmoko.Util {
             this.size = size;            
         }        
 
+        construct {
+            debug( "constructed" );
+        }
+
         public void addValue( int x, int y, int z ) {
             var o = new AccelerometerEventDataNode();
 
@@ -35,8 +39,14 @@ namespace Jakob.Openmoko.Util {
             o.y = y;
             o.z = z;
 
+            if ( this.last == null ) {
+                this.last = o;
+            }
+
             o.next = this.first;
-            this.first.prev = o;            
+            if ( this.first != null ) {
+                this.first.prev = o;            
+            }            
             this.first = o;
 
             if ( this.length + 1 > this.size ) {
