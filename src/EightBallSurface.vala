@@ -1,6 +1,7 @@
 using GLib;
 using Gtk;
 using Cairo;
+using Jakob;
 
 namespace MokoEightBall {
 
@@ -9,6 +10,9 @@ namespace MokoEightBall {
         protected HashTable<string, Cairo.ImageSurface> images;
         protected Cairo.ImageSurface[] answers;
         protected Cairo.ImageSurface currentAnswer;
+
+        protected Openmoko.Util.AccelerometerEventManager accel;
+        protected uint shakingStoppedTimer = 0;
 
         public DrawingArea area {
             get;
@@ -29,6 +33,25 @@ namespace MokoEightBall {
             this.area.events = Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.BUTTON_RELEASE_MASK | Gdk.EventMask.EXPOSURE_MASK;
             this.area.expose_event += this.onExpose;
             this.area.button_release_event += this.onButtonRelease;
+
+            this.accel = new Openmoko.Util.AccelerometerEventManager();
+
+            accel.onShaking += ( o, e ) => {
+                Source.remove( this.shakingStoppedTimer );
+                this.shakingStoppedTimer = Timeout.add( 400, () => {
+                    stdout.printf( "SHAKE\n");
+                    this.selectRandomAnswer();
+
+                    // Calculate the exact area which needs to be redrawn           
+                    int movementX, movementY;
+                    int image_width = this.currentAnswer.get_width();
+                    int image_height = this.currentAnswer.get_height();
+                    this.calculateCenterPosition( image_width, image_width, out movementX, out movementY );
+                    this.area.queue_draw_area( movementX, movementY, image_width, image_height );
+
+                    return false;
+                } );
+            };
         }
 
         protected void loadImages() {

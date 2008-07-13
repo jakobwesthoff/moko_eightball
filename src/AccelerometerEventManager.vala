@@ -143,51 +143,50 @@ namespace Jakob.Openmoko.Util {
                 || tmp3 > this.movementTolerance ) {
                     // Create the needed event to emit
                     this.onMovement( this.createAccelerometerEvent() );
-                }
-            }
 
-            // Check for shaking event
-            // Therefore we need to check for acceleration in opposed direction
-            // with quite some force behind it.
-            lock( this.shakingTolerance ) {
-                int shake = 0;
+                    // Check for shaking event
+                    // Therefore we need to check for acceleration in opposed direction
+                    // with quite some force behind it.
+                    lock( this.shakingTolerance ) {
+                        int shake = 0;
 
-                int maxX = 0;
-                int maxY = 0;
-                int maxZ = 0;
+                        int maxX = 0;
+                        int maxY = 0;
+                        int maxZ = 0;
 
-                var iter = this.dataset.createIterator();
-                AccelerometerEventDataNode? cur;
-                AccelerometerEventDataNode? last = null;
-                while( ( cur = iter.next() ) != null ) {
-                    if ( last != null ) {
-                        int tmp;
+                        var iter = this.dataset.createIterator();
+                        AccelerometerEventDataNode? cur;
+                        AccelerometerEventDataNode? last = null;
+                        while( ( cur = iter.next() ) != null ) {
+                            if ( last != null ) {
+                                int tmp;
 
-                        tmp = last.x - cur.x;
-                        tmp = tmp < 0 ? tmp * -1 : tmp;
-                        maxX = maxX > tmp ? maxX : tmp;
+                                tmp = last.x - cur.x;
+                                tmp = tmp < 0 ? tmp * -1 : tmp;
+                                maxX = maxX > tmp ? maxX : tmp;
 
-                        tmp = last.y - cur.y;
-                        tmp = tmp < 0 ? tmp * -1 : tmp;
-                        maxY = maxY > tmp ? maxY : tmp;
+                                tmp = last.y - cur.y;
+                                tmp = tmp < 0 ? tmp * -1 : tmp;
+                                maxY = maxY > tmp ? maxY : tmp;
 
-                        tmp = last.z - cur.z;
-                        tmp = tmp < 0 ? tmp * -1 : tmp;
-                        maxZ = maxZ > tmp ? maxZ : tmp;
+                                tmp = last.z - cur.z;
+                                tmp = tmp < 0 ? tmp * -1 : tmp;
+                                maxZ = maxZ > tmp ? maxZ : tmp;
 
-                        if ( ( ( ( last.x < 0 && cur.x >0 ) || ( last.x > 0 && cur.x < 0 ) ) && ( maxX >= this.shakingTolerance ) )
-                        || ( ( ( last.y < 0 && cur.y >0 ) || ( last.y > 0 && cur.y < 0 ) ) && ( maxY >= this.shakingTolerance ) )
-                        || ( ( ( last.z < 0 && cur.z >0 ) || ( last.z > 0 && cur.z < 0 ) ) && ( maxZ >= this.shakingTolerance ) ) ) {
-                            shake++;
+                                if ( ( ( ( last.x < 0 && cur.x >0 ) || ( last.x > 0 && cur.x < 0 ) ) && ( maxX >= this.shakingTolerance ) )
+                                || ( ( ( last.y < 0 && cur.y >0 ) || ( last.y > 0 && cur.y < 0 ) ) && ( maxY >= this.shakingTolerance ) )
+                                || ( ( ( last.z < 0 && cur.z >0 ) || ( last.z > 0 && cur.z < 0 ) ) && ( maxZ >= this.shakingTolerance ) ) ) {
+                                    shake++;
+                                }
+                            }
+                            last = cur;
+                        }
+                        if ( shake >= this.neededShakes ) {
+                            this.onShaking( this.createAccelerometerEvent() );
                         }
                     }
-                    last = cur;
-                }
-                if ( shake >= this.neededShakes ) {
-                    this.onShaking( this.createAccelerometerEvent() );
                 }
             }
-
         }
 
         protected AccelerometerEvent createAccelerometerEvent() {
