@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import random
+import math
 import evas
 import evas.decorators
 import edje
@@ -35,7 +37,7 @@ class Eightball(object):
 
 		# Register the needed callbacks
 		self.ee.callback_resize         = self.onResize
-		self.ee.callback_delete_request = self.onDelete
+		self.ee.callback_delete_request = self.onDelete		
 
 
 	def onDelete( self, e ):
@@ -49,10 +51,40 @@ class Eightball(object):
 		for key in self.groups.keys():
 			self.groups[key].size = self.size
 
+	def onDisplayRandomAnswer( self, group, signal, source ):
+		answers = [
+			"as_i_see_it_yes",
+			"ask_again_later",
+			"better_not_tell_you_now",
+			"cannot_predict_now",
+			"concentrate_and_ask_again",
+			"dont_count_on_it",
+			"it_is_certain",
+			"it_is_decidedly_so",
+			"most_likely",
+			"my_reply_is_no",
+			"my_sources_say_no",
+			"outlook_good",
+			"outlook_not_so_good",
+			"reply_hazy_try_again",
+			"signs_point_to_yes",
+			"very_doubtful",
+			"without_a_doubt",
+			"yes_definetly",
+			"yes",
+			"you_may_rely_on_it"
+		];
+		group.signal_emit( "%s_fade_in" % answers[int(math.floor(random.random() * 20))], "" )
+
 	def run( self ):
 		# Load the groups
 		self.addGroup( "background" )
 		self.addGroup( "eightball" )
+		self.getGroup( "eightball" ).signal_callback_add( 
+			"display_random_answer",
+			"*",
+			self.onDisplayRandomAnswer
+		)
 		self.ee.show()
 		ecore.main_loop_begin()
 

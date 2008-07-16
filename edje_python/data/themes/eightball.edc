@@ -125,10 +125,69 @@ collections {
 				}
 			}
 
+#define ANSWER(answer)								\
+			part {									\
+				name: answer;						\
+				type: IMAGE;						\
+				mouse_events: 0;					\
+				description {						\
+					state: "default" 0.0;			\
+					rel1 {							\
+						relative: 0.5  0.5;			\
+						offset:   -20  -20;			\
+					}								\
+					rel2 {							\
+						relative: 0.5  0.5;			\
+						offset:    20   20;			\
+					}								\
+					image {							\
+						normal: answer".png";		\
+					}								\
+					color: 255 255 255 0;			\
+				}									\
+				description {						\
+					state: "default" 1.0;			\
+					rel1 {							\
+						relative: 0.5  0.5;			\
+						offset:  -108 -108;			\			
+					}								\
+					rel2 {							\
+						relative: 0.5  0.5;			\
+						offset:   108  108;			\			
+					}								\
+					image {							\
+						normal: answer".png";		\
+					}								\
+					color: 255 255 255 255;			\
+				}									\
+			}
+		
+			ANSWER("as_i_see_it_yes")
+			ANSWER("ask_again_later")
+			ANSWER("better_not_tell_you_now")
+			ANSWER("cannot_predict_now")
+			ANSWER("concentrate_and_ask_again")
+			ANSWER("dont_count_on_it")
+			ANSWER("it_is_certain")
+			ANSWER("it_is_decidedly_so")
+			ANSWER("most_likely")
+			ANSWER("my_reply_is_no")
+			ANSWER("my_sources_say_no")
+			ANSWER("outlook_good")
+			ANSWER("outlook_not_so_good")
+			ANSWER("reply_hazy_try_again")
+			ANSWER("signs_point_to_yes")
+			ANSWER("very_doubtful")
+			ANSWER("without_a_doubt")
+			ANSWER("yes_definetly")
+			ANSWER("yes")
+			ANSWER("you_may_rely_on_it")
+		
 		}
 
 		script {
 			public frontface;
+			public answer_fadeout;
 		}
 
 		programs {
@@ -140,6 +199,7 @@ collections {
 					set_state( PART:"front", "faded", 1.0 );
 					set_state( PART:"back", "faded", 1.0 );
 					set_int( frontface, 0 );
+					set_int( answer_fadeout, 0 );
 					emit("switch", "");
 				}
 			}
@@ -210,9 +270,48 @@ collections {
 
 			program {
 				name: "display_random_answer";
-				script {
-				}
+				action: SIGNAL_EMIT "display_random_answer" "";
 			}
+
+#define ANSWER_PROGRAM(answer)						\
+			program {								\
+				name: answer"_fade_in";				\
+				signal: answer"_fade_in";			\
+				source: "*";						\
+				action: STATE_SET "default" 1.0;	\
+				target: answer;						\
+				transition: LINEAR 0.6;				\
+			}										\
+													\
+			program {								\
+				name: answer"_fade_out";			\
+				signal: "fade_out_answer";			\
+				source: "*";						\
+				action: STATE_SET "default" 0.0;	\
+				target: answer;						\
+				transition: LINEAR 0.3;				\
+			}
+
+			ANSWER_PROGRAM("as_i_see_it_yes")
+			ANSWER_PROGRAM("ask_again_later")
+			ANSWER_PROGRAM("better_not_tell_you_now")
+			ANSWER_PROGRAM("cannot_predict_now")
+			ANSWER_PROGRAM("concentrate_and_ask_again")
+			ANSWER_PROGRAM("dont_count_on_it")
+			ANSWER_PROGRAM("it_is_certain")
+			ANSWER_PROGRAM("it_is_decidedly_so")
+			ANSWER_PROGRAM("most_likely")
+			ANSWER_PROGRAM("my_reply_is_no")
+			ANSWER_PROGRAM("my_sources_say_no")
+			ANSWER_PROGRAM("outlook_good")
+			ANSWER_PROGRAM("outlook_not_so_good")
+			ANSWER_PROGRAM("reply_hazy_try_again")
+			ANSWER_PROGRAM("signs_point_to_yes")
+			ANSWER_PROGRAM("very_doubtful")
+			ANSWER_PROGRAM("without_a_doubt")
+			ANSWER_PROGRAM("yes_definetly")
+			ANSWER_PROGRAM("yes")
+			ANSWER_PROGRAM("you_may_rely_on_it")
 		}
 	}
-}
+
