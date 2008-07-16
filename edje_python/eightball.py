@@ -9,7 +9,7 @@ import edje.decorators
 import ecore
 import ecore.evas
 
-import eGroup
+from eGroup import eGroup
 
 class Eightball(object):
 	engine = None
@@ -95,7 +95,7 @@ class Eightball(object):
 
 	def addGroup( self, group ):
 		if group not in self.groups.keys():
-			self.groups[group] = eGroup.eGroup( self, group )
+			self.groups[group] = eGroup( self, group )
 			self.groups[group].show()
 
 
