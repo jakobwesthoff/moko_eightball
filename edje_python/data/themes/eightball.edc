@@ -1,0 +1,218 @@
+images {
+	image: "eightball_back.png" COMP;
+	image: "eightball_front.png" COMP;
+
+	image: "as_i_see_it_yes.png" COMP;
+	image: "ask_again_later.png" COMP;
+	image: "better_not_tell_you_now.png" COMP;
+	image: "cannot_predict_now.png" COMP;
+	image: "concentrate_and_ask_again.png" COMP;
+	image: "dont_count_on_it.png" COMP;
+	image: "it_is_certain.png" COMP;
+	image: "it_is_decidedly_so.png" COMP;
+	image: "most_likely.png" COMP;
+	image: "my_reply_is_no.png" COMP;
+	image: "my_sources_say_no.png" COMP;
+	image: "outlook_good.png" COMP;
+	image: "outlook_not_so_good.png" COMP;
+	image: "reply_hazy_try_again.png" COMP;
+	image: "signs_point_to_yes.png" COMP;
+	image: "very_doubtful.png" COMP;
+	image: "without_a_doubt.png" COMP;
+	image: "yes_definetly.png" COMP;
+	image: "yes.png" COMP;
+	image: "you_may_rely_on_it.png" COMP;
+}
+
+spectra {
+	spectrum {
+		name: "backgroundSpectrum";
+		color: 252 211 148 255 0;
+		color: 245 120 0   255 1;
+	}
+}
+
+collections {
+	group {
+		name: "background";
+
+		parts {
+			part {
+				name: "backgroundGradient";
+				type: GRADIENT;
+				mouse_events: 0;
+				description {
+					state: "default" 0.0;
+					rel1 {
+						relative: 0.0 0.0;
+						offset:     0   0;
+					}
+					rel2 {
+						relative: 1.0 1.0;
+						offset:    -1  -1;
+					}
+					gradient {
+						type: "linear";
+						spectrum: "backgroundSpectrum";
+						rel1 {
+							relative: 0.0 0.0;
+							offset:     0   0;						
+						}
+						rel2 {
+							relative: 0.0 1.0;
+							offset:     0  -1;
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+	group {
+		name: "eightball";
+
+		parts {												
+#define EIGHTBALL(face)										\
+			part {											\
+				name: face;									\
+				type: IMAGE;								\
+				mouse_events: 0;							\
+				description {								\
+					state: "default" 0.0;					\
+					rel1 {									\
+						relative: 0.5  0.5;					\
+						offset:  -189 -189;					\
+					}										\
+					rel2 {									\
+						relative: 0.5 0.5;					\
+						offset:   188 188;					\
+					}										\
+					image {									\
+						normal: "eightball_"face".png";		\
+					}										\
+				}											\
+				description {								\
+					state: "faded" 0.0;						\
+					inherit: "default" 0.0;					\
+					color: 255 255 255 255;					\
+				}											\
+				description {								\
+					state: "faded" 1.0;						\
+					inherit: "default" 0.0;					\
+					color: 255 255 255 0;					\
+				}											\
+			}
+
+			EIGHTBALL("front")
+			EIGHTBALL("back")
+
+			part {
+				name: clickable_area;
+				type: RECT;
+				mouse_events: 1;
+				description {
+					state: "default" 0.0;
+					rel1 {
+						relative: 0.0 0.0;
+						offset:     0   0;						
+					}
+					rel2 {
+						relative: 1.0 1.0;
+						offset:    -1  -1;						
+					}
+					color: 0 0 0 0;
+				}
+			}
+
+		}
+
+		script {
+			public frontface;
+		}
+
+		programs {
+			program {
+				name: "onLoad";
+				signal: "load";
+				source: "";
+				script {
+					set_state( PART:"front", "faded", 1.0 );
+					set_state( PART:"back", "faded", 1.0 );
+					set_int( frontface, 0 );
+					emit("switch", "");
+				}
+			}
+					
+			program {
+				name: "onClick";
+				signal: "mouse,clicked,1";
+				source: "clickable_area";
+				action: SIGNAL_EMIT "switch" "clickable_area";				
+			}
+
+			program {
+				name: "switch";
+				signal: "switch";
+				source: "*";
+				script {
+					if ( get_int(frontface) == 0 ) {
+						emit("switch_to_front", "" );
+						set_int(frontface, 1);
+					}
+					else {
+						emit("switch_to_back", "" );
+						set_int(frontface, 0);
+					}					
+				}				
+			}
+
+			program {
+				name: "fade_out_front";
+				signal: "switch_to_back";
+				source: "*";
+				action: STATE_SET "faded" 1.0;
+				target: "front";
+				transition: LINEAR 0.8;
+			}
+			program {
+				name: fade_in_back;
+				signal: "switch_to_back";
+				source: "*";
+				action: STATE_SET "faded" 0.0;
+				target: "back";
+				transition: LINEAR 0.8;
+				after: "display_random_answer";
+			}
+
+			program {
+				name: "fade_out_back";
+				signal: "switch_to_front";
+				source: "*";
+				action: STATE_SET "faded" 1.0;				
+				target: "back";
+				transition: LINEAR 0.8;
+			}
+			program {
+				name: "fade_out_back2";
+				signal: "switch_to_front";
+				source: "*";
+				action: SIGNAL_EMIT "fade_out_answer" ""; 
+			}
+			program {
+				name: "fade_in_front";
+				signal: "switch_to_front";
+				source: "*";
+				action: STATE_SET "faded" 0.0;
+				target: "front";
+				transition: LINEAR 0.8;
+			}
+
+			program {
+				name: "display_random_answer";
+				script {
+				}
+			}
+		}
+	}
+}

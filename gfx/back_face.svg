@@ -556,6 +556,15 @@
        y1="273"
        x2="274"
        y2="359.5" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3373"
+       id="linearGradient4501"
+       gradientUnits="userSpaceOnUse"
+       x1="231.4865"
+       y1="269.35135"
+       x2="328.27927"
+       y2="398.88287" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -573,9 +582,9 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:window-width="1920"
-     inkscape:window-height="1176"
-     inkscape:window-x="0"
-     inkscape:window-y="0" />
+     inkscape:window-height="1115"
+     inkscape:window-x="1920"
+     inkscape:window-y="25" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -595,7 +604,7 @@
        id="g3332">
       <g
          id="g3303"
-         inkscape:export-filename="/home/jakob/dev/vala/moko_eightball/src/data/eightball_back_face.png"
+         inkscape:export-filename="/home/jakob/dev/vala/moko_eightball/edje_python/data/images/eightball_back.png"
          inkscape:export-xdpi="90"
          inkscape:export-ydpi="90">
         <g
@@ -632,6 +641,16 @@
            sodipodi:ry="77"
            d="M 364,327 A 77,77 0 1 1 210,327 A 77,77 0 1 1 364,327 z"
            transform="matrix(1.4050633,0,0,1.4050633,-161.25317,-141.4557)" />
+        <path
+           transform="matrix(1.4050633,0,0,1.4050633,-157.25317,-139.4557)"
+           d="M 364,327 A 77,77 0 1 1 210,327 A 77,77 0 1 1 364,327 z"
+           sodipodi:ry="77"
+           sodipodi:rx="77"
+           sodipodi:cy="327"
+           sodipodi:cx="287"
+           id="path4499"
+           style="opacity:0.23580789;fill:url(#linearGradient4501);fill-opacity:1;stroke:none;stroke-width:3.91441441;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;filter:url(#filter3289)"
+           sodipodi:type="arc" />
       </g>
       <g
          id="g3363">
