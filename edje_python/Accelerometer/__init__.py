@@ -16,6 +16,8 @@ class EventManager(threading.Thread):
 		movement = []
 	)
 
+	acceleration = []
+
 	running = True
 
 	def addListener( self, type, func ):
@@ -53,8 +55,10 @@ class EventManager(threading.Thread):
 						type, code, value = struct.unpack_from( "@HHi", data[8:] )
 						if ( type == 0 and code == 0 ):
 							# Syncronization
+							# Add the values to the acceleration list
+							self.addAccelerationData( x, y, z )
 							# Inform all listeners
-							self.informListeners( x, y, z )
+							self.informListeners()
 							break
 						if ( type == 2 and code == 0 ):
 							# Update x
@@ -70,6 +74,17 @@ class EventManager(threading.Thread):
 							continue					
 			time.sleep( 0.1 )
 
-	def informListeners( self, x, y, z ):
+	def addAccelerationData( self, x, y, z ):
+		# Check if we already have reached the limit of values to be stored
+		if ( len( self.acceleration ) >= 10 ):
+			# Remove the last entry
+			self.acceleration.pop( 10 )
+		
+		# Add the new data values
+		self.acceleration.insert( 0, ( x, y, z ) )
+
+	def informListeners( self ):
+		x, y, z = self.acceleration[0]
+
 		for listener in self.listeners['movement']:
 			listener( x, y, z )
