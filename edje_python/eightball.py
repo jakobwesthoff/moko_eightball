@@ -9,6 +9,7 @@ import edje.decorators
 import ecore
 import ecore.evas
 
+import Accelerometer
 from eGroup import eGroup
 
 class Eightball(object):
@@ -16,7 +17,8 @@ class Eightball(object):
 	ee = None
 	size = ( 0, 0 )
 	groups = {}
-
+	accel = None
+	shakeTimer = None
 
 	def __init__( self, size ):
 		# Check if we can use accelerated rendering
@@ -28,6 +30,12 @@ class Eightball(object):
 
 		self.size = size
 		
+		# Init the Accelerometer Event Manager
+		self.accel = Accelerometer.EventManager()
+
+		# Set the acceleration callbacks
+		self.accel.addListener( "shake", self.onShake )		
+
 		# Initialize the renderer and set all initial properties
 		self.ee = self.engine( w = size[0], h = size[1] )
 		self.ee.title = "Moko Eightball"
@@ -76,7 +84,21 @@ class Eightball(object):
 		];
 		group.signal_emit( "%s_fade_in" % answers[int(math.floor(random.random() * 20))], "" )
 
+	def onShake( self, count, acceleration ):
+		if ( self.shakeTimer != None ):
+			self.shakeTimer.delete()
+			del self.shakeTimer
+		self.shakeTimer = ecore.timer_add( 0.3, self.fireSwitchToBackEvent )
+
+	def fireSwitchToBackEvent( self ):
+		print "Firing \"switch_to_back\" event"
+		self.getGroup( "eightball" ).signal_emit( "fade_out_answer", "" )
+		self.getGroup( "eightball" ).signal_emit( "switch_to_back", "" )
+
 	def run( self ):
+		# Inititalize the Accelerometer
+		self.accel.init()
+
 		# Load the groups
 		self.addGroup( "background" )
 		self.addGroup( "eightball" )
@@ -85,6 +107,7 @@ class Eightball(object):
 			"*",
 			self.onDisplayRandomAnswer
 		)
+
 		self.ee.show()
 		ecore.main_loop_begin()
 

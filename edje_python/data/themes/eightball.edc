@@ -187,7 +187,6 @@ collections {
 
 		script {
 			public frontface;
-			public answer_fadeout;
 		}
 
 		programs {
@@ -198,9 +197,8 @@ collections {
 				script {
 					set_state( PART:"front", "faded", 1.0 );
 					set_state( PART:"back", "faded", 1.0 );
-					set_int( frontface, 0 );
-					set_int( answer_fadeout, 0 );
-					emit("switch", "");
+					set_int( frontface, 0 );					
+					emit("switch_to_front", "");
 				}
 			}
 					
@@ -218,13 +216,29 @@ collections {
 				script {
 					if ( get_int(frontface) == 0 ) {
 						emit("switch_to_front", "" );
-						set_int(frontface, 1);
 					}
 					else {
 						emit("switch_to_back", "" );
-						set_int(frontface, 0);
 					}					
 				}				
+			}
+
+			program {
+				name: "setFrontfaceToBack";
+				signal: "switch_to_back";
+				source: "*";
+				script {
+					set_int(frontface, 0);
+				}
+			}
+
+			program {
+				name: "setFrontfaceToFront";
+				signal: "switch_to_front";
+				source: "*";
+				script {
+					set_int(frontface, 1);
+				}
 			}
 
 			program {
