@@ -1,5 +1,4 @@
 import Accelerometer
-import Accelerometer.decorators
 
 import time
 

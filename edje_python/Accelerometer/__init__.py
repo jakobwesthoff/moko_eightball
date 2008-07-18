@@ -5,6 +5,8 @@ import threading
 import thread
 import time
 
+from math import fabs
+
 class EventManager(threading.Thread):
 	movementTolerance = 30
 	shakeTolerance    = 600
@@ -33,7 +35,11 @@ class EventManager(threading.Thread):
 			self.shakeTolerance = tolerance
 
 	def init( self ):
-		self.eventInterface = open( "/dev/input/event2", "r" )
+		# Make sure we always at least two value tuples in the accerlation list
+		self.acceleration.append((0,0,0))
+		self.acceleration.append((0,0,0))
+
+		# Initialize the lock needed for thread safety
 		self.cycleLock = thread.allocate_lock()
 
 	def stop( self ):
@@ -78,13 +84,17 @@ class EventManager(threading.Thread):
 		# Check if we already have reached the limit of values to be stored
 		if ( len( self.acceleration ) >= 10 ):
 			# Remove the last entry
-			self.acceleration.pop( 10 )
+			self.acceleration.pop( 9 )
 		
 		# Add the new data values
 		self.acceleration.insert( 0, ( x, y, z ) )
 
 	def informListeners( self ):
-		x, y, z = self.acceleration[0]
+		x0, y0, z0 = self.acceleration[1]
+		x1, y1, z1 = self.acceleration[0]
 
-		for listener in self.listeners['movement']:
-			listener( x, y, z )
+		if (   fabs( x0 - x1 ) >= self.movementTolerance
+			or fabs( y0 - y1 ) >= self.movementTolerance
+			or fabs( z0 - z1 ) >= self.movementTolerance ):
+				for listener in self.listeners['movement']:
+					listener( x0, y0, z0 )
