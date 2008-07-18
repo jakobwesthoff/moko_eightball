@@ -20,6 +20,7 @@ class EventManager(threading.Thread):
 
 	def addListener( self, type, func ):
 		self.listeners[type].append( func )
+		print "added listener: ", func
 
 	def setMovementTolerance( self, tolerance ):
 		with self.cycleLock:
