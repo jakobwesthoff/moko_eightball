@@ -1,4 +1,6 @@
 images {
+	image: "background_gradient.png" COMP;
+
 	image: "eightball_back.png" COMP;
 	image: "eightball_front.png" COMP;
 
@@ -24,14 +26,6 @@ images {
 	image: "you_may_rely_on_it.png" COMP;
 }
 
-spectra {
-	spectrum {
-		name: "backgroundSpectrum";
-		color: 252 211 148 255 0;
-		color: 245 120 0   255 1;
-	}
-}
-
 collections {
 	group {
 		name: "background";
@@ -39,7 +33,7 @@ collections {
 		parts {
 			part {
 				name: "backgroundGradient";
-				type: GRADIENT;
+				type: IMAGE;
 				mouse_events: 0;
 				description {
 					state: "default" 0.0;
@@ -51,18 +45,9 @@ collections {
 						relative: 1.0 1.0;
 						offset:    -1  -1;
 					}
-					gradient {
-						type: "linear";
-						spectrum: "backgroundSpectrum";
-						rel1 {
-							relative: 0.0 0.0;
-							offset:     0   0;						
-						}
-						rel2 {
-							relative: 0.0 1.0;
-							offset:     0  -1;
-						}
-					}
+					image {
+						normal: "background_gradient.png";
+					}						
 				}
 			}
 		}
@@ -73,39 +58,66 @@ collections {
 		name: "eightball";
 
 		parts {												
-#define EIGHTBALL(face)										\
-			part {											\
-				name: face;									\
-				type: IMAGE;								\
-				mouse_events: 0;							\
-				description {								\
-					state: "default" 0.0;					\
-					rel1 {									\
-						relative: 0.5  0.5;					\
-						offset:  -189 -189;					\
-					}										\
-					rel2 {									\
-						relative: 0.5 0.5;					\
-						offset:   188 188;					\
-					}										\
-					image {									\
-						normal: "eightball_"face".png";		\
-					}										\
-				}											\
-				description {								\
-					state: "faded" 0.0;						\
-					inherit: "default" 0.0;					\
-					color: 255 255 255 255;					\
-				}											\
-				description {								\
-					state: "faded" 1.0;						\
-					inherit: "default" 0.0;					\
-					color: 255 255 255 0;					\
-				}											\
+			part {
+				name: "front";
+				type: IMAGE;
+				mouse_events: 0;
+				description {
+					state: "default" 0.0;
+					rel1 {
+						relative: 0.5  0.5;
+						offset:  -189 -189;
+					}
+					rel2 {
+						relative: 0.5 0.5;
+						offset:   188 188;
+					}
+					image {
+						normal: "eightball_front.png";
+					}
+				}
+				description {
+					state: "faded" 0.0;
+					inherit: "default" 0.0;
+					color: 255 255 255 255;
+				}
+				description {
+					state: "faded" 1.0;
+					inherit: "default" 0.0;
+					color: 255 255 255 0;
+				}
 			}
 
-			EIGHTBALL("front")
-			EIGHTBALL("back")
+			part {
+				name: "back";
+				type: IMAGE;
+				mouse_events: 0;
+				description {
+					state: "default" 0.0;
+					rel1 {
+						relative: 0.5  0.5;
+						offset:  -112 -112;
+					}
+					rel2 {
+						relative: 0.5 0.5;
+						offset:   112 112;
+					}
+					image {
+						normal: "eightball_back.png";
+					}
+				}
+				description {
+					state: "faded" 0.0;
+					inherit: "default" 0.0;
+					color: 255 255 255 255;
+				}
+				description {
+					state: "faded" 1.0;
+					inherit: "default" 0.0;
+					color: 255 255 255 0;
+				}
+			}
+
 
 			part {
 				name: clickable_area;
@@ -241,14 +253,6 @@ collections {
 				}
 			}
 
-			program {
-				name: "fade_out_front";
-				signal: "switch_to_back";
-				source: "*";
-				action: STATE_SET "faded" 1.0;
-				target: "front";
-				transition: LINEAR 0.8;
-			}
 			program {
 				name: fade_in_back;
 				signal: "switch_to_back";
