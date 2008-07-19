@@ -56,7 +56,8 @@ class EventManager(object):
 			self.shakeTolerance = tolerance
 
 	def init( self ):
-		# Make sure we always at least two value tuples in the accerlation list
+		# Make sure we have always at least two value tuples in the
+		# acceleration list
 		self.acceleration.append((0,0,0))
 		self.acceleration.append((0,0,0))
 
