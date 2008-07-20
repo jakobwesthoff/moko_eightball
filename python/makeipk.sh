@@ -9,7 +9,7 @@ cd src/data/themes
 ./maketheme.sh
 cd ../../../
 
-cp src/data/themes/eightball.edj ipk/usr/share/moko_eightball/eightball.edj
+cp src/data/themes/eightball.edj ipk/usr/share/moko_eightball/themes/eightball.edj
 
 chown -R root:root ./ipk
 
