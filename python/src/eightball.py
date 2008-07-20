@@ -21,6 +21,12 @@
 # 
 ############################################################################### 
 
+global MOKO_EIGHTBALL_PATMOKO_EIGHTBALL_PATH
+MOKO_EIGHTBALL_PATH = "/usr/share/moko_eightball"
+
+import sys
+sys.path.append( MOKO_EIGHTBALL_PATH )
+
 import random
 import math
 import evas
@@ -31,7 +37,6 @@ import ecore
 import ecore.evas
 
 import Accelerometer
-from eGroup import eGroup
 
 class Eightball(object):
 	engine = None
@@ -112,7 +117,6 @@ class Eightball(object):
 		self.shakeTimer = ecore.timer_add( 0.3, self.fireSwitchToBackEvent )
 
 	def fireSwitchToBackEvent( self ):
-		print "Firing \"switch_to_back\" event"
 		self.getGroup( "eightball" ).signal_emit( "fade_out_answer", "" )
 		self.getGroup( "eightball" ).signal_emit( "switch_to_back", "" )
 
@@ -145,6 +149,24 @@ class Eightball(object):
 
 	def getGroup( self, group ):
 		return self.groups[group]
+
+
+"""
+Edje group class
+
+Open the needed theme file and find the selected group in it
+"""
+class eGroup(edje.Edje):
+	def __init__( self, app, group ):
+		global MOKO_EIGHTBALL_PATH
+		theme = "%s/themes/eightball.edj" % MOKO_EIGHTBALL_PATH 
+		try:
+			edje.Edje.__init__( self, app.ee.evas, file = theme, group = group )
+		except edje.EdjeLoadError, e:
+			raise SystemExit( "Could not load theme file: \"%s\"" % theme )
+
+		# Set the currently registered size
+		self.size = app.size
 
 # Main initialization on program start
 if __name__ == "__main__":

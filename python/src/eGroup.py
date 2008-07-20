@@ -21,10 +21,11 @@
 
 import edje
 import edje.decorators
+import eightball
 
 class eGroup(edje.Edje):
 	def __init__( self, app, group ):
-		theme = "data/themes/eightball.edj"
+		theme = "%s/eightball.edj" % eightball.MOKO_EIGHTBALL_PATH 
 		try:
 			edje.Edje.__init__( self, app.ee.evas, file = theme, group = group )
 		except edje.EdjeLoadError, e:
