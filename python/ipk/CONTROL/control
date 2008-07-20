@@ -6,5 +6,5 @@ Priority: optional
 Maintainer: Jakob Westhoff <jakob@westhoffswelt.de>
 Architecture: om-gta02
 Homepage: http://www.westhoffswelt.de
-Depends: libecore-evas, libevas-dev, libevas-engine-software-16-x11, libevas-loader-eet, libevas-loader-png, python-evas, libecore-dev, python-ecore-dev, libeet-dev, libedje-dev, python-edje
+Depends: libecore-evas, libecore0, libevas0, libedje0, libevas-engine-software-16-x11, libevas-loader-eet, libevas-loader-png, python-evas, python-ecore, python-edje, libeet1
 Source: N/A
