@@ -1,0 +1,10 @@
+Package: moko-eightball
+Version: 0.1
+Description: An Accelerometer based implementation of Matels famous Magic Eightball
+Section: openmoko/games
+Priority: optional
+Maintainer: Jakob Westhoff <jakob@westhoffswelt.de>
+Architecture: om-gta02
+Homepage: http://www.westhoffswelt.de
+Depends: libecore-evas, libevas-dev, libevas-engine-software-16-x11, libevas-loader-eet, libevas-loader-png, python-evas, libecore-dev, python-ecore-dev, libeet-dev, libedje-dev, python-edje
+Source: N/A

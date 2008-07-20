@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Moko Eightball
+Comment=The famous Magic Eightball
+Exec=eightball
+Icon=eightball
+Terminal=false
+Type=Application
+Categories=GTK;Application;Games;Fun;
+MimeType=text/x-vcard
+SingleInstance=true
+StartupNotify=true
