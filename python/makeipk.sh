@@ -11,7 +11,14 @@ cd ../../../
 
 cp src/data/themes/eightball.edj ipk/usr/share/moko_eightball/themes/eightball.edj
 
-chown -R root:root ./ipk
+TEMP=`tempfile`
 
-ipkg-build ipk ./
+cp ipk/CONTROL/control "$TEMP"
+sed -e "s@\\\$VERSIONSTRING\\\$@0.`date +%Y%m%d`@" -i ipk/CONTROL/control
+sudo chown -R root:root ./ipk
 
+sudo ipkg-build ipk ./
+
+sudo chown -R jakob:users ./ipk
+
+mv "$TEMP" ipk/CONTROL/control

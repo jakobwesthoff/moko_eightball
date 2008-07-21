@@ -7,6 +7,5 @@ Icon=eightball
 Terminal=false
 Type=Application
 Categories=GTK;Application;Games;Fun;
-MimeType=text/x-vcard
 SingleInstance=true
-StartupNotify=true
+StartupNotify=false

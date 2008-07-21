@@ -1,5 +1,5 @@
 Package: moko-eightball
-Version: 0.1
+Version: $VERSIONSTRING$
 Description: An Accelerometer based implementation of Matels famous Magic Eightball
 Section: openmoko/games
 Priority: optional
